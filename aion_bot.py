@@ -1,7 +1,10 @@
 import json, os, requests
 
 API_URL = "https://api-global-community.plaync.com/aion2_global/board/update_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0"
-WEBHOOK = os.environ["DISCORD_WEBHOOK"]
+WEBHOOKS = [
+    os.environ["DISCORD_WEBHOOK"],
+    os.environ["DISCORD_WEBHOOK2"],
+]
 POST_URL = "https://aion2.plaync.com/en-us/board/update/view?articleId={id}"  # use your confirmed format
 STATE = "seen.json"
 HEADERS = {
@@ -41,7 +44,11 @@ if seen is None:  # first run: record, don't post
 else:
     new = sorted([x for x in posts if x[0] not in seen], key=lambda x: x[0])
     for pid, title in new:
-        requests.post(WEBHOOK, json={"content": f"**{title}**\n{POST_URL.format(id=pid)}"}, timeout=20)
+        for hook in WEBHOOKS:
+            try:
+                requests.post(hook, json={"content": f"**{title}**\n{POST_URL.format(id=pid)}"}, timeout=20)
+            except Exception as e:
+                print("webhook failed:", e)
         seen.add(pid)
 
 json.dump(sorted(seen), open(STATE, "w"))
