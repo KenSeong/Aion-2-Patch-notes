@@ -1,19 +1,20 @@
-import json, os, requests
+import json, os, urllib.request
 
+# Each source has its own list of webhooks.
+# Updates -> webhooks 1 and 2, Announcements -> webhook 3.
 SOURCES = {
     "updates": {
         "api": "https://api-global-community.plaync.com/aion2_global/board/update_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/update/view?articleId={id}",
         "webhooks": [
             os.environ["DISCORD_WEBHOOK"],
-            os.environ["DISCORD_WEBHOOK2"],
         ],
     },
     "announcements": {
         "api": "https://api-global-community.plaync.com/aion2_global/board/notice_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/notice/view?articleId={id}",
         "webhooks": [
-            os.environ["DISCORD_WEBHOOK3"],
+            os.environ["DISCORD_WEBHOOK4"],
         ],
     },
 }
@@ -27,6 +28,26 @@ HEADERS = {
 }
 ID_KEYS = ["articleId", "id", "contentId", "postId"]
 TITLE_KEYS = ["title", "subject", "name"]
+
+
+def get_json(url):
+    req = urllib.request.Request(url, headers=HEADERS)
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+
+def post_webhook(url, payload):
+    # Discord rejects urllib's default User-Agent, so a custom one is required.
+    req = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "DiscordBot (aion-update-bot, 1.0)",
+        },
+        method="POST",
+    )
+    urllib.request.urlopen(req, timeout=20).close()
 
 
 def find_list(obj):
@@ -53,7 +74,7 @@ if isinstance(state, list):  # convert the old single-list format
 
 for name, src in SOURCES.items():
     try:
-        data = requests.get(src["api"], headers=HEADERS, timeout=20).json()
+        data = get_json(src["api"])
         items = find_list(data)
         if not items:
             print(f"{name}: no post list found. Top-level keys: {list(data)}")
@@ -72,10 +93,10 @@ for name, src in SOURCES.items():
             message = {"content": f"**{title}**\n{src['link'].format(id=pid)}"}
             for hook in src["webhooks"]:
                 try:
-                    requests.post(hook, json=message, timeout=20)
+                    post_webhook(hook, message)
                 except Exception as e:
                     print(f"{name}: webhook failed: {e}")
             seen.add(pid)
     state[name] = sorted(seen)
 
-json.dump(state, open(STATE, "w"))
+json.dump(state, open(STATE, "w"), indent=2)
