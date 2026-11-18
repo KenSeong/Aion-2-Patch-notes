@@ -93,7 +93,7 @@ for name, src in SOURCES.items():
         for pid, title in chronological:
             if pid in known:
                 continue
-                        for hook in src["webhooks"]:
+            for hook in src["webhooks"]:
                 ping = " ".join(f"<@&{r}>" for r in hook["roles"])
                 text = f"**{title}**\n{src['link'].format(id=pid)}"
                 message = {
@@ -107,5 +107,4 @@ for name, src in SOURCES.items():
             saved.append(pid)
             known.add(pid)
     state[name] = saved
-
 json.dump(state, open(STATE, "w"), indent=2)
