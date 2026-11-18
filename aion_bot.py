@@ -14,7 +14,7 @@ SOURCES = {
         "api": "https://api-global-community.plaync.com/aion2_global/board/notice_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/notice/view?articleId={id}",
         "webhooks": [
-            os.environ["DISCORD_WEBHOOK4"],
+            os.environ["DISCORD_WEBHOOK"],
         ],
     },
 }
