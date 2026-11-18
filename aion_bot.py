@@ -84,19 +84,23 @@ for name, src in SOURCES.items():
         print(f"{name}: error: {e}")
         continue
 
-    seen = set(state[name]) if name in state else None
-    if seen is None:  # first time for this section: record silently
-        seen = {pid for pid, _ in posts}
+    chronological = list(reversed(posts))
+    saved = state.get(name)
+    if saved is None:  # first time for this section: record silently
+        saved = [pid for pid, _ in chronological]
     else:
-        new = sorted([x for x in posts if x[0] not in seen], key=lambda x: x[0])
-        for pid, title in new:
+        known = set(saved)
+        for pid, title in chronological:
+            if pid in known:
+                continue
             message = {"content": f"**{title}**\n{src['link'].format(id=pid)}"}
             for hook in src["webhooks"]:
                 try:
                     post_webhook(hook, message)
                 except Exception as e:
                     print(f"{name}: webhook failed: {e}")
-            seen.add(pid)
-    state[name] = sorted(seen)
+            saved.append(pid)
+            known.add(pid)
+    state[name] = saved
 
 json.dump(state, open(STATE, "w"), indent=2)
