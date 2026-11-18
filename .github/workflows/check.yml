@@ -17,8 +17,7 @@ jobs:
       - run: python aion_bot.py
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          DISCORD_WEBHOOK2: ${{ secrets.DISCORD_WEBHOOK2 }}
-          DISCORD_WEBHOOK3: ${{ secrets.DISCORD_WEBHOOK3 }}
+          DISCORD_WEBHOOK2: ${{ secrets.DISCORD_WEBHOOK4 }}
       - name: Save seen posts
         run: |
           git config user.name "github-actions"
