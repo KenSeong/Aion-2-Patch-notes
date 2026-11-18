@@ -7,14 +7,14 @@ SOURCES = {
         "api": "https://api-global-community.plaync.com/aion2_global/board/update_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/update/view?articleId={id}",
         "webhooks": [
-            os.environ["DISCORD_WEBHOOK"],
+            {"url": os.environ["DISCORD_WEBHOOK"],  "roles": ["927570462651854868"]}
         ],
     },
     "announcements": {
         "api": "https://api-global-community.plaync.com/aion2_global/board/notice_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/notice/view?articleId={id}",
         "webhooks": [
-            os.environ["DISCORD_WEBHOOK"],
+            {"url": os.environ["DISCORD_WEBHOOK"],  "roles": ["927570462651854868"]}
         ],
     },
 }
@@ -93,10 +93,15 @@ for name, src in SOURCES.items():
         for pid, title in chronological:
             if pid in known:
                 continue
-            message = {"content": f"**{title}**\n{src['link'].format(id=pid)}"}
-            for hook in src["webhooks"]:
+                        for hook in src["webhooks"]:
+                ping = " ".join(f"<@&{r}>" for r in hook["roles"])
+                text = f"**{title}**\n{src['link'].format(id=pid)}"
+                message = {
+                    "content": f"{ping}\n{text}" if ping else text,
+                    "allowed_mentions": {"roles": hook["roles"]},
+                }
                 try:
-                    post_webhook(hook, message)
+                    post_webhook(hook["url"], message)
                 except Exception as e:
                     print(f"{name}: webhook failed: {e}")
             saved.append(pid)
