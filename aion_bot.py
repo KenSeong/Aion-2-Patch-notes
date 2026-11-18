@@ -1,7 +1,5 @@
 import json, os, urllib.request
 
-# Each source has its own list of webhooks.
-# Updates -> webhooks 1 and 2, Announcements -> webhook 3.
 SOURCES = {
     "updates": {
         "api": "https://api-global-community.plaync.com/aion2_global/board/update_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
