@@ -92,8 +92,13 @@ for name, src in SOURCES.items():
         for pid, title in chronological:
             if pid in known:
                 continue
-            message = {"content": f"**{title}**\n{src['link'].format(id=pid)}"}
             for hook in src["webhooks"]:
+                ping = " ".join(f"<@&{r}>" for r in hook["roles"])
+                text = f"**{title}**\n{src['link'].format(id=pid)}"
+                message = {
+                    "content": f"{ping}\n{text}" if ping else text,
+                    "allowed_mentions": {"roles": hook["roles"]},
+                }
                 try:
                     url = hook["url"]
                     if hook.get("thread"):
