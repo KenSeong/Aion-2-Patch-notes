@@ -109,7 +109,10 @@ for name, src in SOURCES.items():
                     "allowed_mentions": {"roles": hook["roles"]},
                 }
                 try:
-                    post_webhook(hook["url"], message)
+                    url = hook["url"]
+                    if hook.get("thread"):
+                        url += f"?thread_id={hook['thread']}"
+                    post_webhook(url, message)
                 except Exception as e:
                     print(f"{name}: webhook failed: {e}")
             saved.append(pid)
