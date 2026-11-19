@@ -7,14 +7,14 @@ SOURCES = {
         "api": "https://api-global-community.plaync.com/aion2_global/board/update_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/update/view?articleId={id}",
         "webhooks": [
-            {"url": os.environ["DISCORD_WEBHOOK_PN_THREAD"],  "roles": ["927570462651854868"]}
+            {"url": os.environ["DISCORD_WEBHOOK"],  "roles": ["927570462651854868"]}
         ],
     },
     "announcements": {
         "api": "https://api-global-community.plaync.com/aion2_global/board/notice_en/article/search/moreArticle?isVote=true&moreSize=18&moreDirection=BEFORE&previousArticleId=0",
         "link": "https://aion2.plaync.com/en-us/board/notice/view?articleId={id}",
         "webhooks": [
-            {"url": os.environ["DISCORD_WEBHOOK_PN_THREAD"],  "roles": ["927570462651854868"]}
+            {"url": os.environ["DISCORD_WEBHOOK"],  "roles": ["927570462651854868"]}
         ],
     },
 }
