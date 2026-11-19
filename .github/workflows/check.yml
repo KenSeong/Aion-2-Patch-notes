@@ -16,7 +16,7 @@ jobs:
           python-version: "3.12"
       - run: python aion_bot.py
         env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_PN_THREAD }}
       - name: Save seen posts
         run: |
           git config user.name "github-actions"
