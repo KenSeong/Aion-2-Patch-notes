@@ -95,7 +95,10 @@ for name, src in SOURCES.items():
             message = {"content": f"**{title}**\n{src['link'].format(id=pid)}"}
             for hook in src["webhooks"]:
                 try:
-                    post_webhook(hook, message)
+                    url = hook["url"]
+                    if hook.get("thread"):
+                        url += f"?thread_id={hook['thread']}"
+                    post_webhook(url, message)
                 except Exception as e:
                     print(f"{name}: webhook failed: {e}")
             saved.append(pid)
