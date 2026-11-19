@@ -68,7 +68,15 @@ def pick(d, keys):
     raise KeyError(f"None of {keys} found. Fields available: {list(d)}")
 
 
-state = json.load(open(STATE)) if os.path.exists(STATE) else {}
+state = {}
+if os.path.exists(STATE):
+    try:
+        with open(STATE, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+            if content:
+                state = json.loads(content)
+    except json.JSONDecodeError:
+        state = {}
 if isinstance(state, list):  # convert the old single-list format
     state = {"updates": state}
 
